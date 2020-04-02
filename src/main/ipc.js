@@ -1,15 +1,17 @@
-var path = require('path')
-var { dialog, app, ipcMain } = require('electron')
+const path = require('path')
+const { dialog, app, ipcMain } = require('electron')
 
-var logger = require('../logger')
-var userConfig = require('./user-config')
-var i18n = require('./i18n')
+const autoUpdater = require('./auto-updater')
+const logger = require('../logger')
+const userConfig = require('./user-config')
+const i18n = require('./i18n')
 
 /**
  * Miscellaneous ipc calls that don't hit mapeo-core
  */
 module.exports = function (win) {
   var ipc = ipcMain
+  autoUpdater(win)
 
   function ipcSend (...args) {
     try {

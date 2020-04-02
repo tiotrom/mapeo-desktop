@@ -170,7 +170,6 @@ function initDirectories (done) {
 }
 
 function createServers (done) {
-  // TODO: rename/refactor
   miscellaneousIpc(win)
 
   logger.log('initializing mapeo', userDataPath, argv.port)
