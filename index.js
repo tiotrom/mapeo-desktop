@@ -17,7 +17,7 @@ const BrowserWindow = electron.BrowserWindow
 
 const updater = require('./src/main/auto-updater')
 const logger = require('./src/logger')
-const miscellaneousIpc = require('./src/main/ipc')
+const electronIpc = require('./src/main/ipc')
 const createMenu = require('./src/main/menu')
 const windowStateKeeper = require('./src/main/window-state')
 
@@ -171,7 +171,7 @@ function initDirectories (done) {
 }
 
 function createServers (done) {
-  miscellaneousIpc(win)
+  electronIpc(win)
 
   logger.log('initializing mapeo', userDataPath, argv.port)
   var opts = {

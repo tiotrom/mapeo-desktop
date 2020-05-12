@@ -1,17 +1,39 @@
 const path = require('path')
 const { dialog, app, ipcMain } = require('electron')
 
-const autoUpdater = require('./auto-updater')
+const updater = require('./auto-updater')
 const logger = require('../logger')
 const userConfig = require('./user-config')
 const i18n = require('./i18n')
 
 /**
- * Miscellaneous ipc calls that don't hit mapeo-core
+ * Miscellaneous ipcMain calls that don't hit mapeo-core
  */
 module.exports = function (win) {
-  var ipc = ipcMain
-  autoUpdater(win)
+  updater.on('error', (err) => {
+    ipcSend('error', err)
+  })
+
+  updater.updateDownloaded(function () {
+    console.log('update downloaded')
+    console.log('args', arguments)
+  })
+
+  updater.updateNotAvailable(function () {
+    console.log('update not available')
+    console.log('args', arguments)
+  })
+
+  updater.downloadProgress(function () {
+    console.log('download progress')
+    console.log('args', arguments)
+  })
+
+  updater.updateAvailable((updateInfo) => {
+    // version, files, path, sha512, releaseDate
+    logger.log('got updateAvailable', updateInfo)
+    ipcSend('update-available', updateInfo)
+  })
 
   function ipcSend (...args) {
     try {
@@ -21,25 +43,25 @@ module.exports = function (win) {
     }
   }
 
-  ipc.on('get-user-data', function (event, type) {
+  ipcMain.on('get-user-data', function (event, type) {
     var data = userConfig.getSettings(type)
     if (!data) console.warn('unhandled event', type)
     event.returnValue = data
   })
 
-  ipc.on('error', function (ev, message) {
+  ipcMain.on('error', function (ev, message) {
     ipcSend('error', message)
   })
 
-  ipc.on('set-locale', function (ev, locale) {
+  ipcMain.on('set-locale', function (ev, locale) {
     app.translations = i18n.setLocale(locale)
   })
 
-  ipc.on('get-locale', function (ev) {
+  ipcMain.on('get-locale', function (ev) {
     ev.returnValue = i18n.locale
   })
 
-  ipc.on('import-example-presets', function (ev) {
+  ipcMain.on('import-example-presets', function (ev) {
     var filename = path.join(
       __dirname,
       '..',
@@ -53,7 +75,7 @@ module.exports = function (win) {
     })
   })
 
-  ipc.on('save-file', function () {
+  ipcMain.on('save-file', function () {
     var metadata = userConfig.getSettings('metadata')
     var ext = metadata ? metadata.dataset_id : 'mapeodata'
     dialog.showSaveDialog(
@@ -76,7 +98,7 @@ module.exports = function (win) {
     }
   })
 
-  ipc.on('open-file', function () {
+  ipcMain.on('open-file', function () {
     var metadata = userConfig.getSettings('metadata')
     var ext = metadata ? metadata.dataset_id : 'mapeodata'
     dialog.showOpenDialog(
@@ -102,15 +124,15 @@ module.exports = function (win) {
     }
   })
 
-  ipc.on('zoom-to-latlon-request', function (_, lon, lat) {
+  ipcMain.on('zoom-to-latlon-request', function (_, lon, lat) {
     ipcSend('zoom-to-latlon-response', [lon, lat])
   })
 
-  ipc.on('force-refresh-window', function () {
+  ipcMain.on('force-refresh-window', function () {
     ipcSend('force-refresh-window')
   })
 
-  ipc.on('refresh-window', function () {
+  ipcMain.on('refresh-window', function () {
     ipcSend('refresh-window')
   })
 }
