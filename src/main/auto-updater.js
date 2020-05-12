@@ -21,11 +21,11 @@ class MapeoUpdater extends events.EventEmitter {
     })
   }
 
-  updateAvailable (cb) {
+  updateAvailable (onupdate) {
     autoUpdater.on('update-available', ({
       version, files, path, sha512, releaseDate
     }) => {
-      cb({
+      onupdate({
         version, files, path, sha512, releaseDate
       })
     })
