@@ -1,27 +1,63 @@
 const { autoUpdater } = require('electron-updater')
-const logger = require('../logger')
+const winston = require('winston')
+const events = require('events')
 
-module.exports = function () {
-  // Check for updates every four hours
-  const FOUR_HOURS = 1000 * 60 * 60 * 4
-  setInterval(async () => {
-    autoUpdater.checkForUpdatesAndNotify()
-  }, FOUR_HOURS)
+// const logger = require('../logger')
 
-  // Settings
-  autoUpdater.autoDownload = false
-  autoUpdater.logger.transports.file.level = 'info'
-  autoUpdater.logger = logger
-  autoUpdater.autoInstallOnAppQuit = false
-  autoUpdater.allowDowngrade = true
+// MapeoUpdater emits the 'error' event when there is an internal error with
+// updating. We wrap electron-updater to control the API surface.
 
-  // Handlers
-  autoUpdater.on('error', console.log)
-  autoUpdater.on('update-available', console.log)
-  autoUpdater.on('update-not-available', console.log)
-  autoUpdater.on('download-progress', console.log)
-  autoUpdater.on('update-downloaded', console.log)
+class MapeoUpdater extends events.EventEmitter {
+  constructor () {
+    super()
+    // Settings
+    autoUpdater.autoDownload = false
+    autoUpdater.logger = winston
+    autoUpdater.autoInstallOnAppQuit = false
+    autoUpdater.allowDowngrade = true
 
-  // Go.
-  autoUpdater.checkForUpdatesAndNotify()
+    autoUpdater.on('error', (err) => {
+      this.emit('error', err)
+    })
+  }
+
+  updateAvailable (cb) {
+    autoUpdater.on('update-available', ({
+      version, files, path, sha512, releaseDate
+    }) => {
+      cb({
+        version, files, path, sha512, releaseDate
+      })
+    })
+  }
+
+  updateNotAvailable (cb) {
+    autoUpdater.on('update-not-available', cb)
+  }
+
+  downloadProgress (cb) {
+    autoUpdater.on('download-progress', cb)
+  }
+
+  updateDownloaded (cb) {
+    autoUpdater.on('update-downloaded', cb)
+  }
+
+  periodicUpdates (interval) {
+    const FOUR_HOURS = 1000 * 60 * 60 * 4
+    setInterval(async () => {
+      autoUpdater.checkForUpdates()
+    }, interval || FOUR_HOURS)
+  }
+
+  checkForUpdates () {
+    console.log('checking for updates')
+    var promise = autoUpdater.checkForUpdates()
+    return promise
+  }
 }
+
+var updater
+if (!updater) updater = new MapeoUpdater()
+
+module.exports = updater

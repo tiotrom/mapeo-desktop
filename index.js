@@ -15,6 +15,7 @@ const rabbit = require('electron-rabbit')
 const app = electron.app
 const BrowserWindow = electron.BrowserWindow
 
+const updater = require('./src/main/auto-updater')
 const logger = require('./src/logger')
 const miscellaneousIpc = require('./src/main/ipc')
 const createMenu = require('./src/main/menu')
@@ -199,6 +200,7 @@ function notifyReady (done) {
       win.maximize()
       splash.destroy()
       win.show()
+      updater.checkForUpdates()
       done()
     }, 1000)
   })

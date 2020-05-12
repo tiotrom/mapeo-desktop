@@ -20,6 +20,7 @@ import MapFilter from './MapFilter'
 import { defineMessages, useIntl } from 'react-intl'
 import createPersistedState from '../hooks/createPersistedState'
 import SyncView from './SyncView'
+import UpdateAvailableView from './UpdateAvailableView'
 
 const m = defineMessages({
   // MapEditor tab label
@@ -181,6 +182,7 @@ export default function Home ({ onSelectLanguage }) {
 
   return (
     <Root>
+      <UpdateAvailableView />
       <Sidebar>
         <TitleBarShim />
         <Logo>
