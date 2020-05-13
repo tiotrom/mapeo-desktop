@@ -1,8 +1,7 @@
 const { autoUpdater } = require('electron-updater')
 const winston = require('winston')
 const events = require('events')
-
-// const logger = require('../logger')
+const logger = require('../logger')
 
 // MapeoUpdater emits the 'error' event when there is an internal error with
 // updating. We wrap electron-updater to control the API surface.
@@ -35,8 +34,12 @@ class MapeoUpdater extends events.EventEmitter {
     autoUpdater.on('update-not-available', cb)
   }
 
-  downloadProgress (cb) {
-    autoUpdater.on('download-progress', cb)
+  downloadProgress (onprogress) {
+    autoUpdater.on('download-progress', (progress) => {
+      onprogress({
+        progress: progress
+      })
+    })
   }
 
   updateDownloaded (cb) {
@@ -50,9 +53,21 @@ class MapeoUpdater extends events.EventEmitter {
     }, interval || FOUR_HOURS)
   }
 
+  downloadUpdate () {
+    logger.log('downloading update')
+    var promise = autoUpdater.downloadUpdate()
+    promise.catch((err) => {
+      this.emit('error', err)
+    })
+    return promise
+  }
+
   checkForUpdates () {
-    console.log('checking for updates')
+    logger.log('checking for updates')
     var promise = autoUpdater.checkForUpdates()
+    promise.catch((err) => {
+      this.emit('error', err)
+    })
     return promise
   }
 }

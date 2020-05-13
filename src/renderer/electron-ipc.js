@@ -5,15 +5,21 @@ export default Api(ipcRenderer)
 
 function Api (ipcRenderer) {
   return {
-    addUpdateAvailableListener: function (handler) {
-      function onupdate (ev, info) {
-        logger.log('in frontend, got update-available', info)
-        handler(info)
+    addUpdateStatusListener: function (handler) {
+      function onupdate (ev, serverState, info) {
+        logger.log('update-status', serverState, info)
+        handler({ serverState, info })
       }
-      ipcRenderer.on('update-available', onupdate)
+      ipcRenderer.on('update-status', onupdate)
       return {
-        remove: () => ipcRenderer.removeListener('update-available', onupdate)
+        remove: () => ipcRenderer.removeListener('update-status', onupdate)
       }
+    },
+    checkForUpdates: function () {
+      ipcRenderer.send('check-for-updates')
+    },
+    downloadUpdate: function () {
+      ipcRenderer.send('download-update')
     }
   }
 }

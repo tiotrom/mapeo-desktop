@@ -11,28 +11,37 @@ const i18n = require('./i18n')
  */
 module.exports = function (win) {
   updater.on('error', (err) => {
+    logger.error('updater error', err)
     ipcSend('error', err)
   })
 
-  updater.updateDownloaded(function () {
-    console.log('update downloaded')
-    console.log('args', arguments)
+  updater.updateDownloaded(function (updateInfo) {
+    logger.log('update downloaded', updateInfo)
+    ipcSend('update-status', 'update-downloaded', updateInfo)
   })
 
   updater.updateNotAvailable(function () {
-    console.log('update not available')
-    console.log('args', arguments)
+    logger.log('update not available')
+    ipcSend('update-status', 'update-not-available', null)
   })
 
-  updater.downloadProgress(function () {
-    console.log('download progress')
-    console.log('args', arguments)
+  updater.downloadProgress(function (progressInfo) {
+    logger.log('download progress', progressInfo)
+    ipcSend('update-status', 'download-progress', progressInfo)
   })
 
   updater.updateAvailable((updateInfo) => {
     // version, files, path, sha512, releaseDate
-    logger.log('got updateAvailable', updateInfo)
-    ipcSend('update-available', updateInfo)
+    logger.log('update available', updateInfo)
+    ipcSend('update-status', 'update-available', updateInfo)
+  })
+
+  ipcMain.on('download-update', function (event) {
+    updater.downloadUpdate()
+  })
+
+  ipcMain.on('check-for-updates', function (event) {
+    updater.checkForUpdates()
   })
 
   function ipcSend (...args) {

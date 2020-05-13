@@ -8,7 +8,8 @@ import {
   LocationOn,
   Map as MapIcon,
   PhotoLibrary as ObservationIcon,
-  OfflineBolt as SyncIcon
+  OfflineBolt as SyncIcon,
+  Warning as WarningIcon
 } from '@material-ui/icons'
 
 import pkg from '../../../package.json'
@@ -20,7 +21,7 @@ import MapFilter from './MapFilter'
 import { defineMessages, useIntl } from 'react-intl'
 import createPersistedState from '../hooks/createPersistedState'
 import SyncView from './SyncView'
-import UpdateAvailableView from './UpdateAvailableView'
+import UpdaterView from './UpdaterView'
 
 const m = defineMessages({
   // MapEditor tab label
@@ -28,7 +29,8 @@ const m = defineMessages({
   // MapFilter tab label
   mapfilter: 'Observations',
   // Synchronize tab label
-  sync: 'Synchronize'
+  sync: 'Synchronize',
+  update: 'Update Mapeo'
 })
 
 const transitionDuration = 100
@@ -182,7 +184,6 @@ export default function Home ({ onSelectLanguage }) {
 
   return (
     <Root>
-      <UpdateAvailableView />
       <Sidebar>
         <TitleBarShim />
         <Logo>
@@ -198,6 +199,7 @@ export default function Home ({ onSelectLanguage }) {
           <StyledTab icon={<MapIcon />} label={t(m.mapeditor)} />
           <StyledTab icon={<ObservationIcon />} label={t(m.mapfilter)} />
           <StyledTab icon={<SyncIcon />} label={t(m.sync)} />
+          <StyledTab icon={<WarningIcon />} label={t(m.update)} />
         </StyledTabs>
         <Version>Mapeo v{pkg.version}</Version>
       </Sidebar>
@@ -205,6 +207,7 @@ export default function Home ({ onSelectLanguage }) {
         <TabPanel value={tabIndex} index={0} component={MapEditor} />
         <TabPanel value={tabIndex} index={1} component={MapFilter} />
         <TabPanel value={tabIndex} index={2} component={SyncView} />
+        <TabPanel value={tabIndex} index={3} component={UpdaterView} />
       </TabContent>
       <ChangeLanguage
         open={dialog === 'ChangeLanguage'}
