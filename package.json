@@ -86,7 +86,7 @@
     "electron-rabbit": "^1.0.0",
     "electron-store": "^5.0.0",
     "electron-timber": "^0.5.1",
-    "electron-updater": "^4.3.0",
+    "electron-updater": "^4.3.1",
     "flat": "^5.0.0",
     "fs-write-stream-atomic": "^1.0.10",
     "html-react-parser": "^0.9.1",
@@ -112,6 +112,7 @@
     "react-dom": "^16.3.2",
     "react-error-boundary": "^1.2.5",
     "react-intl": "^3.2.4",
+    "react-intl-formatted-duration": "^4.0.0",
     "react-mapfilter": "^3.0.0",
     "react-transition-group": "^4.3.0",
     "request": "^2.88.0",
@@ -123,6 +124,7 @@
     "tar-fs": "^1.16.0",
     "through2": "^2.0.5",
     "utm": "^1.1.1",
+    "winston": "^3.2.1",
     "yazl": "^2.5.1"
   },
   "devDependencies": {
