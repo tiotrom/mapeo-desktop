@@ -25,9 +25,21 @@ module.exports = function (win) {
     ipcSend('update-status', 'update-not-available', null)
   })
 
-  updater.downloadProgress(function (progressInfo) {
-    logger.log('download progress', progressInfo)
-    ipcSend('update-status', 'download-progress', progressInfo)
+  updater.downloadProgress(function (updateInfo) {
+    logger.log('download progress', updateInfo)
+    /*
+      {
+        progress: {
+          total: 141164463,
+          delta: 1655048,
+          transferred: 11384326,
+          percent: 8.064583506402741,
+          bytesPerSecond: 2244544
+        }
+      }
+    */
+
+    ipcSend('update-status', 'download-progress', updateInfo)
   })
 
   updater.updateAvailable((updateInfo) => {

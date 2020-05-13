@@ -36,6 +36,7 @@ class MapeoUpdater extends events.EventEmitter {
 
   downloadProgress (onprogress) {
     autoUpdater.on('download-progress', (progress) => {
+      logger.log('progress', progress)
       onprogress({
         progress: progress
       })

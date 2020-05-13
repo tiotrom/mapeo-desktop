@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Typography, makeStyles } from '@material-ui/core'
+import { LinearProgress, Typography, makeStyles } from '@material-ui/core'
 import { defineMessages, useIntl } from 'react-intl'
 import Button from '@material-ui/core/Button'
 import electronIpc from '../electron-ipc'
 import logger from '../../logger'
+import FormattedDuration from 'react-intl-formatted-duration'
 
 const STATES = {
   IDLE: 0,
@@ -23,19 +24,21 @@ function useUpdater () {
         switch (serverState) {
           case 'update-downloaded':
             setUpdate({
-              updateInfo: info,
+              updateInfo: null,
+              progress: null,
               state: STATES.READY_FOR_RESTART
             })
             return
           case 'update-not-available':
             setUpdate({
               updateInfo: null,
+              progress: null,
               state: STATES.IDLE
             })
             return
           case 'download-progress':
             setUpdate({
-              updateInfo: info,
+              progress: info.progress,
               state: STATES.PROGRESS
             })
             return
@@ -77,13 +80,15 @@ const UpdaterView = () => {
     })
   }
 
+  console.log(update)
+
   switch (update.state) {
     case STATES.AVAILABLE:
       return <UpdateAvailableView cx={cx} downloadUpdateClick={downloadUpdateClick} />
     case STATES.DOWNLOADING:
-      return <DownloadProgressView cx={cx} />
+      return <DownloadProgressView cx={cx} percent={0} update={update} />
     case STATES.PROGRESS:
-      return <DownloadProgressView cx={cx} progress={update.updateInfo} />
+      return <DownloadProgressView cx={cx} percent={update.progress.percent} update={update} />
     case STATES.READY_FOR_RESTART:
       return <div>Ready to restart</div> // TODO
     default: // STATES.IDLE
@@ -91,8 +96,29 @@ const UpdaterView = () => {
   }
 }
 
-const DownloadProgressView = ({ cx, progress }) => {
+const DownloadProgressView = ({ cx, update, percent }) => {
   const { formatMessage: t } = useIntl()
+
+  /* TODO: TypeScript/Flow?
+      {
+        progress: {
+          total: 141164463,
+          delta: 1655048,
+          transferred: 11384326,
+          percent: 8.064583506402741,
+          bytesPerSecond: 2244544
+        }
+      }
+  */
+
+  const progress = update.progress
+  let estimatedTimeLeft
+
+  if (progress) {
+    estimatedTimeLeft = (progress.total - progress.transferred) / progress.bytesPerSecond
+  } else {
+    estimatedTimeLeft = Infinity
+  }
 
   return (
     <div className={cx.searchingWrapper}>
@@ -101,7 +127,8 @@ const DownloadProgressView = ({ cx, progress }) => {
           <Typography gutterBottom variant='h2' className={cx.searchingTitle}>
             {t(m.downloadProgress)}
           </Typography>
-          {progress}
+          <LinearProgress variant='determinate' value={percent} color='secondary' />
+          <FormattedDuration seconds={estimatedTimeLeft} />
         </div>
       </div>
     </div>

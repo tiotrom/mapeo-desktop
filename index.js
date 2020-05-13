@@ -101,6 +101,8 @@ function openWindow () {
   }
 
   if (isDev) {
+    // for updater to work correctly
+    process.env.APPIMAGE = path.join(__dirname, 'dist', `Installar_Mapeo_${app.getVersion()}_linux.AppImage`)
     bg = createBgWindow(_socketName)
     try {
       var {
