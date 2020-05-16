@@ -106,7 +106,6 @@ const RestartView = ({ cx }) => {
 }
 
 const DownloadProgressView = ({ cx, update, percent }) => {
-  const { formatMessage: t } = useIntl()
 
   /* TODO: TypeScript/Flow?
       {
