@@ -21,7 +21,8 @@ import MapFilter from './MapFilter'
 import { defineMessages, useIntl } from 'react-intl'
 import createPersistedState from '../hooks/createPersistedState'
 import SyncView from './SyncView'
-import UpdaterView from './UpdaterView'
+import { STATES as updateStates, UpdaterView, MiniUpdaterView } from './UpdaterView'
+import useUpdater from './UpdaterView/useUpdater'
 
 const m = defineMessages({
   // MapEditor tab label
@@ -138,7 +139,7 @@ const focusStates = {
 }
 
 function TabPanel (props) {
-  const { value, index, component: Component } = props
+  const { value, index, component: Component, ...extras } = props
 
   const transitionStyles = {
     entering: { opacity: 1, zIndex: 1, display: 'block' },
@@ -151,7 +152,7 @@ function TabPanel (props) {
     <Transition in={value === index} timeout={transitionDuration}>
       {transitionState => (
         <StyledPanel style={transitionStyles[transitionState]}>
-          {Component && <Component focusState={focusStates[transitionState]} />}
+          {Component && <Component focusState={focusStates[transitionState]} {...extras} />}
         </StyledPanel>
       )}
     </Transition>
@@ -163,6 +164,7 @@ const useTabIndex = createPersistedState('currentView')
 export default function Home ({ onSelectLanguage }) {
   const [dialog, setDialog] = React.useState()
   const [tabIndex, setTabIndex] = useTabIndex(0)
+  const [update, setUpdate] = useUpdater()
   const { formatMessage: t } = useIntl()
 
   React.useEffect(() => {
@@ -181,6 +183,11 @@ export default function Home ({ onSelectLanguage }) {
       ipcRenderer.removeListener('force-refresh-window', openLatLonDialog)
     }
   }, [])
+  console.log(update)
+
+  const hasUpdate = update.state !== updateStates.IDLE &&
+    update.state !== updateStates.UPDATE_NOT_AVAILABLE
+  console.log(hasUpdate)
 
   return (
     <Root>
@@ -199,7 +206,7 @@ export default function Home ({ onSelectLanguage }) {
           <StyledTab icon={<MapIcon />} label={t(m.mapeditor)} />
           <StyledTab icon={<ObservationIcon />} label={t(m.mapfilter)} />
           <StyledTab icon={<SyncIcon />} label={t(m.sync)} />
-          <StyledTab icon={<WarningIcon />} label={t(m.update)} />
+          {hasUpdate && <StyledTab icon={<WarningIcon />} label={<MiniUpdaterView update={update} />} />}
         </StyledTabs>
         <Version>Mapeo v{pkg.version}</Version>
       </Sidebar>
@@ -207,7 +214,7 @@ export default function Home ({ onSelectLanguage }) {
         <TabPanel value={tabIndex} index={0} component={MapEditor} />
         <TabPanel value={tabIndex} index={1} component={MapFilter} />
         <TabPanel value={tabIndex} index={2} component={SyncView} />
-        <TabPanel value={tabIndex} index={3} component={UpdaterView} />
+        <TabPanel value={tabIndex} index={3} component={UpdaterView} update={update} setUpdate={setUpdate} />
       </TabContent>
       <ChangeLanguage
         open={dialog === 'ChangeLanguage'}

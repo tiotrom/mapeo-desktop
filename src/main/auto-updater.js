@@ -50,7 +50,7 @@ class MapeoUpdater extends events.EventEmitter {
   periodicUpdates (interval) {
     const FOUR_HOURS = 1000 * 60 * 60 * 4
     setInterval(async () => {
-      autoUpdater.checkForUpdates()
+      this.checkForUpdates()
     }, interval || FOUR_HOURS)
   }
 
@@ -70,6 +70,10 @@ class MapeoUpdater extends events.EventEmitter {
       this.emit('error', err)
     })
     return promise
+  }
+
+  quitAndInstall () {
+    autoUpdater.quitAndInstall()
   }
 }
 

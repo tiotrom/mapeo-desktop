@@ -56,6 +56,10 @@ module.exports = function (win) {
     updater.checkForUpdates()
   })
 
+  ipcMain.on('quit-and-install', function (event) {
+    updater.quitAndInstall()
+  })
+
   function ipcSend (...args) {
     try {
       win.webContents.send.apply(win.webContents, args)

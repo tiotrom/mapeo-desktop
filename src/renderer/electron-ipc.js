@@ -20,6 +20,9 @@ function Api (ipcRenderer) {
     },
     downloadUpdate: function () {
       ipcRenderer.send('download-update')
+    },
+    quitAndInstall: function () {
+      ipcRenderer.send('quit-and-install')
     }
   }
 }

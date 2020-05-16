@@ -49,6 +49,8 @@
   "menu-copy": "Copy",
   "menu-paste": "Paste",
   "menu-selectall": "Select all",
+  "menu-check-for-updates": "Check for updates...",
+  "menu-no-updates-available": "Mapeo is all up to date! You're using the latest version.",
   "save-db-dialog": "Create a new database to syncronize",
   "open-db-dialog": "Select a database to syncronize",
   "feedback-contribute-button": "Feedback & Contribute",

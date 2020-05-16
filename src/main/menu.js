@@ -1,6 +1,7 @@
 const { dialog, app, Menu } = require('electron')
 
 const userConfig = require('./user-config')
+const updater = require('./auto-updater')
 const i18n = require('./i18n')
 const logger = require('../logger')
 const t = i18n.t
@@ -107,6 +108,21 @@ function menuTemplate (ipc) {
                 ipc.send('import-data', filename)
               }
             )
+          },
+          visible: true
+        },
+        {
+          label: t('menu-check-for-updates'),
+          click: function (item, focusedWindow) {
+            updater.checkForUpdates()
+              .then(function (_, update) {
+                if (!update) {
+                  dialog.showMessageBox({
+                    message: t('menu-no-updates-available'),
+                    buttons: ['OK']
+                  })
+                }
+              })
           },
           visible: true
         }
