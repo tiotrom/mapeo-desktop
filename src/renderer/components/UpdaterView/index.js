@@ -43,7 +43,8 @@ export const MiniUpdaterView = ({ update }) => {
         return null
     }
   }
-  return internal()
+
+  return <div className={cx.miniUpdaterView}>{internal()}</div>
 }
 
 export const UpdaterView = ({ update, setUpdate }) => {

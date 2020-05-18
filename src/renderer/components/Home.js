@@ -91,6 +91,7 @@ const StyledTabs = styled(Tabs)`
 const StyledTab = styled(Tab)`
   padding: 6px 24px 6px 18px;
   min-height: 64px;
+  max-width: 200px;
   font-size: 1em;
   font-weight: 400;
   text-transform: capitalize;
@@ -183,7 +184,6 @@ export default function Home ({ onSelectLanguage }) {
       ipcRenderer.removeListener('force-refresh-window', openLatLonDialog)
     }
   }, [])
-  console.log(update)
 
   const hasUpdate = update.state !== updateStates.IDLE &&
     update.state !== updateStates.UPDATE_NOT_AVAILABLE
