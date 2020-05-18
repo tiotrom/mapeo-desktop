@@ -233,6 +233,10 @@
       {
         "provider": "github",
         "releaseType": "release"
+      },
+      {
+        "provider": "s3",
+        "bucket": "downloads.mapeo.app"
       }
     ],
     "files": [
