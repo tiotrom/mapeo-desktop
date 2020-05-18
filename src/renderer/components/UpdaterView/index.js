@@ -19,6 +19,7 @@ const m = defineMessages({
   updateAvailable: 'Update Available',
   updateNotAvailable: 'Mapeo is up to date! You are on the latest version.',
   downloadButtonText: 'Download now',
+  calculatingProgress: 'Estimating...',
   downloadProgress: 'Download Progress',
   restartMapeoText: 'An update to Mapeo has been downloaded. Restart Mapeo to update.',
   restartMapeoButton: 'Restart Mapeo'
@@ -33,7 +34,7 @@ export const MiniUpdaterView = ({ update }) => {
       case STATES.AVAILABLE:
         return <Typography>{t(m.updateAvailable)}</Typography>
       case STATES.DOWNLOADING:
-        return <DownloadProgressView cx={cx} percent={0} update={update} />
+        return <Typography>{t(m.calculatingProgress)}</Typography>
       case STATES.PROGRESS:
         return <DownloadProgressView cx={cx} percent={update.progress.percent} update={update} />
       case STATES.READY_FOR_RESTART:
@@ -50,10 +51,10 @@ export const UpdaterView = ({ update, setUpdate }) => {
   const { formatMessage: t } = useIntl()
 
   const downloadUpdateClick = () => {
-    electronIpc.downloadUpdate()
     setUpdate({
       state: STATES.DOWNLOADING
     })
+    electronIpc.downloadUpdate()
   }
 
   var internal = function () {
@@ -71,7 +72,7 @@ export const UpdaterView = ({ update, setUpdate }) => {
           </UpdateAvailableView>
         )
       case STATES.DOWNLOADING:
-        return <DownloadProgressView cx={cx} percent={0} update={update} />
+        return <Typography>{t(m.calculatingProgress)}</Typography>
       case STATES.PROGRESS:
         return <DownloadProgressView cx={cx} percent={update.progress.percent} update={update} />
       case STATES.READY_FOR_RESTART:
@@ -106,8 +107,7 @@ const RestartView = ({ cx }) => {
 }
 
 const DownloadProgressView = ({ cx, update, percent }) => {
-
-  /* TODO: TypeScript/Flow?
+  /*
       {
         progress: {
           total: 141164463,
