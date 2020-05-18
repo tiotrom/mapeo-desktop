@@ -194,6 +194,7 @@
     "logError": true
   },
   "build": {
+    "generateUpdatesFilesForAllChannels": true,
     "appId": "org.digital-democracy.mapeo-desktop",
     "productName": "Mapeo",
     "artifactName": "Installar_Mapeo_v${version}_${os}.${ext}",

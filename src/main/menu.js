@@ -264,7 +264,42 @@ function menuTemplate (ipc) {
     {
       label: t('menu-help'),
       role: 'help',
-      submenu: []
+      submenu: [
+        {
+          label: t('menu-get-beta'),
+          type: 'checkbox',
+          click: function (item, focusedWindow) {
+            updater.channel = 'beta'
+            updater.checkForUpdates()
+              .then(function (_, update) {
+                if (!update) {
+                  dialog.showMessageBox({
+                    message: t('menu-no-updates-available'),
+                    buttons: ['OK']
+                  })
+                }
+              })
+          },
+          visible: true
+        },
+        {
+          label: t('menu-downgrade-beta'),
+          type: 'checkbox',
+          click: function (item, focusedWindow) {
+            updater.channel = 'latest'
+            updater.checkForUpdates()
+              .then(function (_, update) {
+                if (!update) {
+                  dialog.showMessageBox({
+                    message: t('menu-no-updates-available'),
+                    buttons: ['OK']
+                  })
+                }
+              })
+          },
+          visible: updater.channel === 'beta'
+        }
+      ]
     }
   ]
 

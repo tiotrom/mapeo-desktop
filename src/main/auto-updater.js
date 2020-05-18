@@ -5,11 +5,15 @@ const logger = require('../logger')
 
 // MapeoUpdater emits the 'error' event when there is an internal error with
 // updating. We wrap electron-updater to control the API surface.
+//
+
+const FEED_URL = 'https://downloads.mapeo.app/desktop'
 
 class MapeoUpdater extends events.EventEmitter {
   constructor () {
     super()
     // Settings
+    autoUpdater.setFeedURL(FEED_URL)
     autoUpdater.autoDownload = false
     autoUpdater.logger = winston
     autoUpdater.autoInstallOnAppQuit = false

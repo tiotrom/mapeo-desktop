@@ -1,8 +1,8 @@
-owner: digidem
-repo: mapeo-desktop
-provider: github
+#owner: digidem
+#repo: mapeo-desktop
+#provider: github
 
-#provider: generic
-#url: http://127.0.0.1:8080
-#channel: latest
+provider: generic
+url: https://downloads.mapeo.app/desktop
+channel: latest
 
