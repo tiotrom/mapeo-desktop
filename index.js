@@ -232,8 +232,6 @@ function createWindow (socketName) {
   })
   mainWindowState.manage(win)
 
-  win.loadURL(INDEX)
-
   win.webContents.on('did-finish-load', () => {
     if (process.env.NODE_ENV === 'test') win.setSize(1000, 800, false)
     if (argv.debug) win.webContents.openDevTools()
@@ -241,6 +239,13 @@ function createWindow (socketName) {
       name: socketName
     })
   })
+  win.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL, isMainFrame) => {
+    if (errorDescription === 'ERR_INTERNET_DISCONNECTED' || errorDescription === 'ERR_PROXY_CONNECTION_FAILED') {
+      logger.log(errorDescription)
+    }
+    logger.error(errorDescription)
+  })
+  win.loadURL(INDEX)
   return win
 }
 
