@@ -202,7 +202,6 @@ function notifyReady (done) {
       win.maximize()
       splash.destroy()
       win.show()
-      updater.checkForUpdates()
       updater.periodicUpdates()
       done()
     }, 1000)

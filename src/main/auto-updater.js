@@ -2,10 +2,10 @@ const { autoUpdater } = require('electron-updater')
 const winston = require('winston')
 const events = require('events')
 const logger = require('../logger')
+const ping = require('domain-ping')
 
 // MapeoUpdater emits the 'error' event when there is an internal error with
 // updating. We wrap electron-updater to control the API surface.
-//
 
 const FEED_URL = 'https://downloads.mapeo.app/desktop'
 
@@ -18,10 +18,9 @@ class MapeoUpdater extends events.EventEmitter {
     autoUpdater.logger = winston
     autoUpdater.autoInstallOnAppQuit = false
     autoUpdater.allowDowngrade = true
+    this._onerror = this._onerror.bind(this)
 
-    autoUpdater.on('error', (err) => {
-      this.emit('error', err)
-    })
+    autoUpdater.on('error', this._onerror)
   }
 
   updateAvailable (onupdate) {
@@ -56,24 +55,35 @@ class MapeoUpdater extends events.EventEmitter {
     setInterval(async () => {
       this.checkForUpdates()
     }, interval || FOUR_HOURS)
+    this.checkForUpdates()
   }
 
   downloadUpdate () {
     logger.log('downloading update')
     var promise = autoUpdater.downloadUpdate()
-    promise.catch((err) => {
-      this.emit('error', err)
-    })
+    promise.catch(this._onerror)
     return promise
   }
 
   checkForUpdates () {
     logger.log('checking for updates')
-    var promise = autoUpdater.checkForUpdates()
-    promise.catch((err) => {
-      this.emit('error', err)
+    ping(FEED_URL + '/latest-linux.yml').then((res) => {
+      logger.log('on the internet!', FEED_URL)
+      try {
+        var promise = autoUpdater.checkForUpdates()
+        promise.catch(this._onerror)
+      } catch (err) {
+        this._onerror(err)
+      }
+    }).catch(() => {
+      // TODO: error codes for internationalization.
+      this._onerror(new Error('Internet not available.'))
     })
-    return promise
+  }
+
+  _onerror (err) {
+    logger.error(err)
+    this.emit('error', err)
   }
 
   quitAndInstall () {

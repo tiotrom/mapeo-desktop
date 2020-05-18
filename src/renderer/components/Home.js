@@ -187,7 +187,6 @@ export default function Home ({ onSelectLanguage }) {
 
   const hasUpdate = update.state !== updateStates.IDLE &&
     update.state !== updateStates.UPDATE_NOT_AVAILABLE
-  console.log(hasUpdate)
 
   return (
     <Root>
