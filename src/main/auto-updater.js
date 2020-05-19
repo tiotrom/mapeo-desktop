@@ -67,7 +67,7 @@ class MapeoUpdater extends events.EventEmitter {
 
   checkForUpdates () {
     logger.log('checking for updates')
-    ping(FEED_URL + '/latest-linux.yml').then((res) => {
+    ping('downloads.mapeo.app').then((res) => {
       logger.log('on the internet!', FEED_URL)
       try {
         var promise = autoUpdater.checkForUpdates()
@@ -75,8 +75,9 @@ class MapeoUpdater extends events.EventEmitter {
       } catch (err) {
         this._onerror(err)
       }
-    }).catch(() => {
+    }).catch((err) => {
       // TODO: error codes for internationalization.
+      console.error(err)
       this._onerror(new Error('Internet not available.'))
     })
   }
