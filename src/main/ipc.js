@@ -9,7 +9,7 @@ const i18n = require('./i18n')
 /**
  * Miscellaneous ipcMain calls that don't hit mapeo-core
  */
-module.exports = function (win) {
+module.exports = function (ipcSend) {
   updater.on('error', (err) => {
     logger.error('updater error', err)
     ipcSend('error', err)
@@ -60,13 +60,6 @@ module.exports = function (win) {
     updater.quitAndInstall()
   })
 
-  function ipcSend (...args) {
-    try {
-      win.webContents.send.apply(win.webContents, args)
-    } catch (e) {
-      logger.error('exception win.webContents.send', args, e.stack)
-    }
-  }
 
   ipcMain.on('get-user-data', function (event, type) {
     var data = userConfig.getSettings(type)
@@ -119,7 +112,7 @@ module.exports = function (win) {
 
     function onopen (filename) {
       if (typeof filename === 'undefined') return
-      win.webContents.send('select-file', filename)
+      ipcSend('select-file', filename)
     }
   })
 
@@ -144,7 +137,7 @@ module.exports = function (win) {
       if (typeof filenames === 'undefined') return
       if (filenames.length === 1) {
         var file = filenames[0]
-        win.webContents.send('select-file', file)
+        ipcSend('select-file', file)
       }
     }
   })

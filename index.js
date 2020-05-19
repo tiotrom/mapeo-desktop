@@ -173,7 +173,15 @@ function initDirectories (done) {
 }
 
 function createServers (done) {
-  electronIpc(win)
+  function ipcSend (...args) {
+    try {
+      if (win && win.webContents) win.webContents.send.apply(win.webContents, args)
+    } catch (e) {
+      logger.error('exception win.webContents.send', args, e.stack)
+    }
+  }
+
+  electronIpc(ipcSend)
 
   logger.log('initializing mapeo', userDataPath, argv.port)
   var opts = {
@@ -266,9 +274,11 @@ function createBgWindow (socketName) {
   win.loadURL(BG)
   win.webContents.on('did-finish-load', () => {
     if (argv.debug) bg.webContents.openDevTools()
-    win.webContents.send('set-socket', {
-      name: socketName
-    })
+    if (win && win.webContents) {
+      win.webContents.send('set-socket', {
+        name: socketName
+      })
+    }
   })
   win.on('closed', () => {
     console.log('background window closed')
