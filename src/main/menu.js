@@ -21,6 +21,16 @@ module.exports = async function createMenu (ipc) {
   i18n.on('locale-change', () => setMenu())
 }
 
+function onUpdate (err, update) {
+  if (err) logger.error('[UPDATER]', err)
+  if (!update) {
+    dialog.showMessageBox({
+      message: t('menu-no-updates-available'),
+      buttons: ['OK']
+    })
+  }
+}
+
 function menuTemplate (ipc) {
   var template = [
     {
@@ -73,7 +83,7 @@ function menuTemplate (ipc) {
                 userConfig.importSettings(filenames[0], cb)
                 function cb (err) {
                   if (!err) {
-                    logger.log('reloading')
+                    logger.log('[SYSTEM] Forcing window refresh')
                     ipc.send('reload-config', null, () => {
                       focusedWindow.webContents.send('force-refresh-window')
                     })
@@ -114,15 +124,7 @@ function menuTemplate (ipc) {
         {
           label: t('menu-check-for-updates'),
           click: function (item, focusedWindow) {
-            updater.checkForUpdates()
-              .then(function (_, update) {
-                if (!update) {
-                  dialog.showMessageBox({
-                    message: t('menu-no-updates-available'),
-                    buttons: ['OK']
-                  })
-                }
-              })
+            updater.checkForUpdates(onUpdate)
           },
           visible: true
         }
@@ -268,36 +270,12 @@ function menuTemplate (ipc) {
         {
           label: t('menu-get-beta'),
           type: 'checkbox',
+          checked: updater.channel === 'beta',
           click: function (item, focusedWindow) {
-            updater.channel = 'beta'
-            updater.checkForUpdates()
-              .then(function (_, update) {
-                if (!update) {
-                  dialog.showMessageBox({
-                    message: t('menu-no-updates-available'),
-                    buttons: ['OK']
-                  })
-                }
-              })
+            updater.channel = (updater.channel === 'beta') ? 'latest' : 'beta'
+            updater.checkForUpdates(onUpdate)
           },
           visible: true
-        },
-        {
-          label: t('menu-downgrade-beta'),
-          type: 'checkbox',
-          click: function (item, focusedWindow) {
-            updater.channel = 'latest'
-            updater.checkForUpdates()
-              .then(function (_, update) {
-                if (!update) {
-                  dialog.showMessageBox({
-                    message: t('menu-no-updates-available'),
-                    buttons: ['OK']
-                  })
-                }
-              })
-          },
-          visible: updater.channel === 'beta'
         }
       ]
     }

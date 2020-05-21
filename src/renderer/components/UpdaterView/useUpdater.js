@@ -13,7 +13,6 @@ export default function useUpdater () {
   useEffect(
     () => {
       const updateListener = electronIpc.addUpdateStatusListener(({ serverState, info }) => {
-        logger.log('updateListener', serverState, info)
         switch (serverState) {
           case 'update-downloaded':
             setUpdate({

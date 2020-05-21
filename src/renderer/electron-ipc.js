@@ -1,5 +1,4 @@
 import { ipcRenderer } from 'electron'
-import logger from '../logger'
 
 export default Api(ipcRenderer)
 
@@ -7,7 +6,6 @@ function Api (ipcRenderer) {
   return {
     addUpdateStatusListener: function (handler) {
       function onupdate (ev, serverState, info) {
-        logger.log('update-status', serverState, info)
         handler({ serverState, info })
       }
       ipcRenderer.on('update-status', onupdate)

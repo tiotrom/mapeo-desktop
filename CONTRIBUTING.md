@@ -52,22 +52,21 @@ the Internet or want to test new behavior:
 
 ```
 $ mkdir updates
-$ wget https://downloads.mapeo.app/desktop/latest-{platform}.yml 
+$ cd updates && wget https://downloads.mapeo.app/desktop/latest-{platform}.yml 
 ```
 
 1. Then, open latest-linux.yml and find the `url` key. 
 
 2. Download this url (e.g., `https://downloads.mapeo.ap/desktop/Installar_Mapeo_{version}_{platform}.{ext}..` to the `updates` directory. 
 
-
-3. Run `npx http-server updates` to host your update server locally, note the
+3. Run `npx http-server` to host your update server locally, note the
    PORT.
 
 4. Open `dev-app-update.yml` and change the url to `http://localhost:PORT`. 
+5. Modify `src/main/auto-update.js` and comment out the code that sets FEED_URL
 
-**Optional: you can run this update server on a local network, open the IP/Port and create
-a proxy to that server from https://downloads.mapeo.app, and then you have
-local updates. Woah.** 
+**You can run this update server on a local network and create a proxy to that
+server from https://downloads.mapeo.app to prioritize local updates.** 
 
 ### Run a mock device
 
