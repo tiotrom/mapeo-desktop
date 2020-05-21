@@ -10,9 +10,15 @@ const i18n = require('./i18n')
  * Miscellaneous ipcMain calls that don't hit mapeo-core
  */
 module.exports = function (ipcSend) {
+  function onError (err) {
+    logger.error('[MAIN/IPC] error', err)
+    ipcSend('error', err.message, err.stack)
+  }
+
   updater.on('error', (err) => {
-    logger.error('updater error', err)
-    ipcSend('error', err)
+    logger.error('[UPDATER] error', err)
+    ipcSend('update-status', 'update-error', err)
+    onError(err)
   })
 
   updater.updateDownloaded(function (updateInfo) {
@@ -60,7 +66,6 @@ module.exports = function (ipcSend) {
     updater.quitAndInstall()
   })
 
-
   ipcMain.on('get-user-data', function (event, type) {
     var data = userConfig.getSettings(type)
     if (!data) console.warn('unhandled event', type)
@@ -68,7 +73,7 @@ module.exports = function (ipcSend) {
   })
 
   ipcMain.on('error', function (ev, message) {
-    ipcSend('error', message)
+    onError(new Error(message))
   })
 
   ipcMain.on('set-locale', function (ev, locale) {
