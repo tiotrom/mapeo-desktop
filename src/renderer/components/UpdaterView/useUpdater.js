@@ -14,6 +14,13 @@ export default function useUpdater () {
     () => {
       const updateListener = electronIpc.addUpdateStatusListener(({ serverState, info }) => {
         switch (serverState) {
+          case 'update-error':
+            setUpdate({
+              updateInfo: null,
+              progress: null,
+              state: STATES.ERROR
+            })
+            return
           case 'update-downloaded':
             setUpdate({
               updateInfo: null,
@@ -28,7 +35,7 @@ export default function useUpdater () {
               state: STATES.UPDATE_NOT_AVAILABLE
             })
             return
-          case 'download-progress':
+          case 'update-progress':
             setUpdate({
               progress: info.progress,
               state: STATES.PROGRESS

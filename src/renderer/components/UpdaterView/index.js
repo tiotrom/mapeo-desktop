@@ -3,6 +3,7 @@ import { LinearProgress, Typography, makeStyles } from '@material-ui/core'
 import { defineMessages, useIntl } from 'react-intl'
 import Button from '@material-ui/core/Button'
 import FormattedDuration from 'react-intl-formatted-duration'
+import ErrorIcon from '@material-ui/icons/Error'
 
 import electronIpc from '../../electron-ipc'
 
@@ -11,7 +12,8 @@ export const STATES = {
   AVAILABLE: 1,
   DOWNLOADING: 2,
   PROGRESS: 3,
-  READY_FOR_RESTART: 4
+  READY_FOR_RESTART: 4,
+  ERROR: 5
 }
 
 const m = defineMessages({
@@ -22,7 +24,8 @@ const m = defineMessages({
   calculatingProgress: 'Estimating...',
   downloadProgress: 'Download Progress',
   restartMapeoText: 'An update to Mapeo has been downloaded. Restart Mapeo to update.',
-  restartMapeoButton: 'Restart Mapeo'
+  restartMapeoButton: 'Restart Mapeo.',
+  errorMessage: 'There was an error and Mapeo could not update. Try again later.'
 })
 
 export const MiniUpdaterView = ({ update }) => {
@@ -39,6 +42,15 @@ export const MiniUpdaterView = ({ update }) => {
         return <DownloadProgressView cx={cx} percent={update.progress.percent} update={update} />
       case STATES.READY_FOR_RESTART:
         return <Typography>{t(m.restartMapeoButton)}</Typography>
+      case STATES.ERROR:
+        return <Typography>
+          <ErrorIcon
+            fontSize='inherit'
+            className={cx.icon}
+            style={{ color: 'red' }}
+          />
+          {t(m.errorMessage)}
+        </Typography>
       default: // STATES.IDLE, STATES.UPDATE_NOT_AVAILABLE:
         return null
     }
@@ -190,5 +202,8 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     backgroundColor: '#F5F5F5'
+  },
+  icon: {
+    fontSize: 48
   }
 }))
