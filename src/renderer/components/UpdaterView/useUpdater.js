@@ -1,5 +1,4 @@
 import { STATES } from './'
-import logger from '../../../logger'
 import electronIpc from '../../electron-ipc'
 import { useEffect, useState } from 'react'
 
